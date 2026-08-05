@@ -8,6 +8,7 @@
 <meta name="description" content="Free cutting mat wallpaper generator. Draw technical grids, numbered rulers, angle guides and simulated draped fabric in your browser, then export a 4K PNG for desktop, ultrawide, iPad or iPhone. No signup, no upload.">
 <link rel="canonical" href="https://cutting-mat-generator-eight.vercel.app/">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="author" content="josemidev">
 <meta name="theme-color" content="#0b0c0b">
 <meta name="color-scheme" content="dark">
 
@@ -95,6 +96,12 @@
   th,td{border:1px solid var(--edge);padding:7px 10px;text-align:left}
   th{color:var(--fg);font-weight:500;background:rgba(255,255,255,.03)}
   footer{margin-top:46px;padding-top:16px;border-top:1px solid var(--edge);font-size:10.5px;color:var(--dim);line-height:1.7}
+  .sig{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+  .sig p{font-size:11.5px;color:var(--fg);letter-spacing:.04em}
+  .sig p a{color:var(--fg);text-underline-offset:3px}
+  .star{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--edge-hi);color:var(--fg);text-decoration:none;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+  .star:hover,.star:focus-visible{background:var(--fg);color:var(--ink);border-color:var(--fg)}
+  .star svg{width:13px;height:13px;fill:currentColor;flex:none}
 </style>
 
 <script type="application/ld+json">
@@ -113,6 +120,12 @@
       "description": "A browser-based generator that draws cutting mat style wallpapers — technical grids, numbered rulers, angle guides and simulated draped fabric — and exports them as PNG at up to 5120 x 1440 pixels.",
       "inLanguage": "en",
       "isAccessibleForFree": true,
+      "author": {
+        "@type": "Person",
+        "name": "josemidev",
+        "url": "https://github.com/josemidev"
+      },
+      "codeRepository": "https://github.com/josemidev/cutting-mat-generator",
       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
       "featureList": [
         "Solid, custom and gradient backgrounds with adjustable angle",
@@ -336,7 +349,14 @@
   </main>
 
   <footer>
-    Inspired by the <b>Cutting Mat Wallpaper Pack</b> by Rad Bali &amp; Robert McCombe. This tool draws its own grids — it does not redistribute their files.
+    <div class="sig">
+      <p>Built by <a href="https://github.com/josemidev" target="_blank" rel="noopener author">josemidev</a></p>
+      <a class="star" href="https://github.com/josemidev/cutting-mat-generator" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 17.4l-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/></svg>
+        Support with a star
+      </a>
+    </div>
+    <p>Inspired by the <b>Cutting Mat Wallpaper Pack</b> by Rad Bali &amp; Robert McCombe. This tool draws its own grids — it does not redistribute their files.</p>
   </footer>
 </div>
 
