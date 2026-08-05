@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Cutting Mat — 4K Wallpaper Generator</title>
+<meta name="description" content="Free cutting mat wallpaper generator. Draw technical grids, numbered rulers, angle guides and simulated draped fabric in your browser, then export a 4K PNG for desktop, ultrawide, iPad or iPhone. No signup, no upload.">
+<link rel="canonical" href="https://cutting-mat-generator-eight.vercel.app/">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#0b0c0b">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cutting Mat">
+<meta property="og:title" content="Cutting Mat — 4K Wallpaper Generator">
+<meta property="og:description" content="Draw technical grids, numbered rulers, angle guides and simulated draped fabric, then export a 4K PNG. Runs entirely in your browser.">
+<meta property="og:url" content="https://cutting-mat-generator-eight.vercel.app/">
+<meta property="og:image" content="https://cutting-mat-generator-eight.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A cutting mat wallpaper: green background, white technical grid, numbered ruler and the headline Stay Focused.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cutting Mat — 4K Wallpaper Generator">
+<meta name="twitter:description" content="Draw technical grids, numbered rulers, angle guides and simulated draped fabric, then export a 4K PNG. Runs entirely in your browser.">
+<meta name="twitter:image" content="https://cutting-mat-generator-eight.vercel.app/og.jpg">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E8A62'/%3E%3Cg stroke='%23fff' stroke-width='1' opacity='.55'%3E%3Cpath d='M8 0v32M16 0v32M24 0v32M0 8h32M0 16h32M0 24h32'/%3E%3C/g%3E%3Cpath d='M2 30 30 2' stroke='%23fff' stroke-width='1.6'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{--ink:#0b0c0b;--panel:#141614;--edge:rgba(255,255,255,.10);--edge-hi:rgba(255,255,255,.24);--dim:#7d837c;--fg:#e8e6df}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ink);color:var(--fg);font-family:"IBM Plex Mono",ui-monospace,monospace}
+  body{min-height:100vh;padding:28px 24px 60px;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:44px 44px}
+  .wrap{max-width:1240px;margin:0 auto}
+  .skip{position:absolute;left:-9999px;top:0;background:var(--fg);color:var(--ink);padding:9px 14px;font-size:11px;z-index:9}
+  .skip:focus{left:24px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--edge)}
+  h1{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:30px}
+  header p{color:var(--dim);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:1fr 306px;gap:26px;margin-top:24px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .stage{border:1px solid var(--edge);background:#000;padding:14px;position:relative}
+  canvas#preview{display:block;width:100%;height:auto;background:#000}
+  .stage .corner{position:absolute;width:9px;height:9px;border:1px solid var(--edge-hi)}
+  .c1{top:5px;left:5px}.c2{top:5px;right:5px}.c3{bottom:5px;left:5px}.c4{bottom:5px;right:5px}
+  .panel{border:1px solid var(--edge);background:var(--panel);max-height:calc(100vh - 120px);overflow-y:auto;position:sticky;top:20px}
+  .sec{padding:15px 16px;border:0;border-bottom:1px solid var(--edge);display:block;width:100%}
+  .sec:last-child{border-bottom:0}
+  .lbl,legend{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:9px;display:block;padding:0}
+  .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .sw{aspect-ratio:1;border:1px solid var(--edge);cursor:pointer;position:relative;padding:0}
+  .sw[aria-pressed="true"]{outline:1px solid var(--fg);outline-offset:2px}
+  .sw input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:0}
+  textarea,select,input[type=text]{width:100%;background:#0b0c0b;color:var(--fg);border:1px solid var(--edge);padding:8px 9px;font-family:inherit;font-size:12px;border-radius:0}
+  textarea{resize:vertical;line-height:1.5}
+  select:focus,textarea:focus,input:focus,button:focus-visible{outline:1px solid var(--edge-hi);outline-offset:-1px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .seg button{background:#0b0c0b;border:1px solid var(--edge);color:var(--dim);padding:7px 4px;font-family:inherit;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+  .seg button[aria-pressed="true"]{color:var(--ink);background:var(--fg);border-color:var(--fg)}
+  .slider{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .slider:last-child{margin-bottom:0}
+  .slider label{font-size:10px;color:var(--dim);min-width:62px;letter-spacing:.05em}
+  input[type=range]{flex:1;accent-color:var(--fg);height:2px;min-width:0}
+  .slider b{font-size:10.5px;font-weight:500;min-width:26px;text-align:right}
+  .check{display:flex;align-items:center;gap:8px;font-size:11.5px;cursor:pointer;margin-bottom:8px}
+  .check:last-child{margin-bottom:0}
+  .check input{accent-color:var(--fg);width:13px;height:13px}
+  .dl{width:100%;padding:12px;background:var(--fg);color:var(--ink);border:0;font-family:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-weight:500}
+  .dl:hover{background:#fff}
+  .dl:disabled{opacity:.5;cursor:wait}
+  .reseed{width:100%;margin-top:9px;padding:8px;background:#0b0c0b;border:1px solid var(--edge);color:var(--fg);font-family:inherit;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  .reseed:hover{border-color:var(--edge-hi)}
+  .note{font-size:10px;color:var(--dim);line-height:1.6;margin-top:9px}
+  .mini{font-size:10px;color:var(--dim);margin:-3px 0 8px}
+  .prose{margin-top:46px;max-width:74ch;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:14px;line-height:1.72;color:#c9c8c1}
+  .prose section{margin-top:34px}
+  .prose h2{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:24px;color:var(--fg);margin-bottom:12px}
+  .prose h3{font-size:13.5px;font-weight:500;color:var(--fg);margin:20px 0 5px}
+  .prose p{margin-bottom:12px}
+  .prose ul,.prose ol{margin:0 0 12px 20px}
+  .prose li{margin-bottom:6px}
+  .prose b,.prose strong{color:var(--fg);font-weight:500}
+  .prose a{color:var(--fg)}
+  .tablewrap{overflow-x:auto;margin-bottom:12px}
+  table{border-collapse:collapse;width:100%;font-family:"IBM Plex Mono",monospace;font-size:12px;min-width:420px}
+  caption{text-align:left;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding-bottom:9px}
+  th,td{border:1px solid var(--edge);padding:7px 10px;text-align:left}
+  th{color:var(--fg);font-weight:500;background:rgba(255,255,255,.03)}
+  footer{margin-top:46px;padding-top:16px;border-top:1px solid var(--edge);font-size:10.5px;color:var(--dim);line-height:1.7}
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://cutting-mat-generator-eight.vercel.app/#app",
+      "name": "Cutting Mat — 4K Wallpaper Generator",
+      "url": "https://cutting-mat-generator-eight.vercel.app/",
+      "applicationCategory": "DesignApplication",
+      "applicationSubCategory": "Wallpaper generator",
+      "operatingSystem": "Any modern web browser",
+      "browserRequirements": "Requires JavaScript and HTML5 Canvas",
+      "description": "A browser-based generator that draws cutting mat style wallpapers — technical grids, numbered rulers, angle guides and simulated draped fabric — and exports them as PNG at up to 5120 x 1440 pixels.",
+      "inLanguage": "en",
+      "isAccessibleForFree": true,
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "featureList": [
+        "Solid, custom and gradient backgrounds with adjustable angle",
+        "Procedural draped fabric simulation using value noise and fBm",
+        "Line or cross grid with adjustable cell size and contrast",
+        "Numbered ruler, 45 degree diagonal and dashed angle guides",
+        "Grid knockout behind headline and paragraph text",
+        "Six export formats including 4K desktop, 32:9 ultrawide, iPad and iPhone",
+        "Shareable presets encoded in the URL",
+        "Client-side PNG export with no upload"
+      ],
+      "permissions": "No account, no data collection, no server upload"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://cutting-mat-generator-eight.vercel.app/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a cutting mat wallpaper?",
+          "acceptedAnswer": {"@type": "Answer", "text": "A cutting mat wallpaper is a desktop or phone background styled after a self-healing craft cutting mat: a flat saturated color overlaid with a fine measurement grid, a numbered ruler along the edges, a 45 degree diagonal and dashed angle guides. The look comes from the tools used in sewing, model making and paper craft, and it reads as calm and technical rather than decorative."}
+        },
+        {
+          "@type": "Question",
+          "name": "Is the wallpaper generator free?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes. It is free, needs no account and shows no ads. Every wallpaper is drawn in your own browser with the HTML5 Canvas API, so no image is ever uploaded to a server."}
+        },
+        {
+          "@type": "Question",
+          "name": "What resolution are the exported wallpapers?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Six formats are available: 3840 x 2160 for 16:9 desktops, 3840 x 2400 for 16:10, 5120 x 1440 for 32:9 ultrawide monitors, 2732 x 2048 for iPad, 1320 x 2868 for iPhone and 1080 x 1920 for 9:16 stories. Files are exported as PNG."}
+        },
+        {
+          "@type": "Question",
+          "name": "How do I share a wallpaper configuration?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Every setting is encoded in the page URL as it changes. Press Copy preset link, or copy the address bar, and whoever opens that link sees the exact same configuration. Nothing is stored on a server or in browser storage."}
+        },
+        {
+          "@type": "Question",
+          "name": "How is the draped fabric effect made?",
+          "acceptedAnswer": {"@type": "Answer", "text": "A low resolution grayscale luminance map is generated with value noise and fractional Brownian motion, then scaled up and composited over the background in soft-light and multiply blend modes. Noise perturbs the fold direction, the spacing between folds and the brightness along each fold, so the folds never look periodic."}
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use the generated wallpapers commercially?",
+          "acceptedAnswer": {"@type": "Answer", "text": "The images this tool draws are generated by algorithms in your browser and are yours to use. The tool is an original implementation inspired by the visual language of cutting mats; it does not contain or redistribute any third party artwork."}
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#generator">Skip to the generator</a>
+
+<div class="wrap">
+  <header>
+    <h1>Cutting Mat</h1>
+    <p>Wallpaper generator · 4K export</p>
+  </header>
+
+  <main>
+    <div class="grid" id="generator">
+      <section class="stage" aria-label="Wallpaper preview">
+        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+        <canvas id="preview" role="img" aria-label="Live preview of the wallpaper being generated"></canvas>
+        <noscript>
+          <p class="note">This generator draws the wallpaper with HTML5 Canvas, so JavaScript has to be enabled. Everything runs locally in your browser — nothing is sent anywhere.</p>
+        </noscript>
+      </section>
+
+      <form class="panel" id="controls" aria-label="Wallpaper settings" onsubmit="return false">
+        <fieldset class="sec">
+          <legend>Solid color</legend>
+          <div class="swatches" id="swatches"></div>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend>Gradient</legend>
+          <div class="swatches" id="gradients"></div>
+          <div class="slider" style="margin-top:11px"><label for="angle">Angle</label><input type="range" id="angle" min="0" max="360" value="105"><b id="anglev">105</b></div>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend>Fabric</legend>
+          <div class="slider"><label for="cloth">Intensity</label><input type="range" id="cloth" min="0" max="100" value="0"><b id="clothv">0</b></div>
+          <div class="slider"><label for="folds">Folds</label><input type="range" id="folds" min="1" max="8" value="2"><b id="foldsv">2</b></div>
+          <div class="slider"><label for="drape">Drape</label><input type="range" id="drape" min="-85" max="85" value="-62"><b id="drapev">-62</b></div>
+          <p class="mini" style="margin-top:9px">Raise the intensity to simulate draped fabric.</p>
+          <button type="button" id="reseed" class="reseed">New fold variation</button>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend>Grid</legend>
+          <div class="seg" id="pattern">
+            <button type="button" data-v="lines" aria-pressed="true">Lines</button>
+            <button type="button" data-v="dots" aria-pressed="false">Crosses</button>
+          </div>
+          <div class="slider" style="margin-top:11px"><label for="cell">Cell</label><input type="range" id="cell" min="28" max="110" value="52"><b id="cellv">52</b></div>
+          <div class="slider"><label for="opacity">Contrast</label><input type="range" id="opacity" min="4" max="60" value="26"><b id="opacityv">26</b></div>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend>Technical details</legend>
+          <label class="check"><input type="checkbox" id="frame" checked> Frame</label>
+          <label class="check"><input type="checkbox" id="ruler" checked> Numbered ruler</label>
+          <label class="check"><input type="checkbox" id="diag" checked> 45° diagonal</label>
+          <label class="check"><input type="checkbox" id="angles" checked> Angle guides</label>
+          <label class="check"><input type="checkbox" id="knock" checked> Knock grid out behind text</label>
+          <label class="check"><input type="checkbox" id="grain" checked> Grain</label>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend><label for="text">Headline</label></legend>
+          <textarea id="text" rows="2" spellcheck="false">Stay Focused.</textarea>
+          <div class="slider" style="margin-top:10px"><label for="tsize">Size</label><input type="range" id="tsize" min="10" max="46" value="22"><b id="tsizev">22</b></div>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend><label for="side">Side label</label></legend>
+          <input type="text" id="side" value="CUTTING MAT WALLPAPER — 16:9">
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend><label for="para">Paragraph (bottom right)</label></legend>
+          <textarea id="para" rows="4" spellcheck="false">Don't let distractions dilute your potential. Point your attention at what actually matters and watch clarity turn into results.</textarea>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend><label for="size">Format</label></legend>
+          <select id="size">
+            <option value="3840x2160">Desktop 16:9 — 3840 × 2160</option>
+            <option value="3840x2400">Desktop 16:10 — 3840 × 2400</option>
+            <option value="5120x1440">Ultrawide 32:9 — 5120 × 1440</option>
+            <option value="2732x2048">iPad — 2732 × 2048</option>
+            <option value="1320x2868">iPhone — 1320 × 2868</option>
+            <option value="1080x1920">Story 9:16 — 1080 × 1920</option>
+          </select>
+        </fieldset>
+
+        <fieldset class="sec">
+          <legend>Share settings</legend>
+          <button type="button" class="reseed" id="copylink" style="margin-top:0">Copy preset link</button>
+          <p class="mini" id="copyhint" style="margin:9px 0 0" aria-live="polite">The link stores every current setting.</p>
+        </fieldset>
+
+        <div class="sec">
+          <button type="button" class="dl" id="dl">Download PNG</button>
+          <p class="note">Generated in your browser. Nothing is uploaded anywhere.</p>
+        </div>
+      </form>
+    </div>
+
+    <div class="prose">
+      <section id="about">
+        <h2>A cutting mat wallpaper generator that runs in your browser</h2>
+        <p><b>Cutting Mat</b> is a free tool that draws desktop and phone wallpapers styled after a self-healing craft cutting mat, and exports them as PNG at up to 5120 × 1440 pixels. Pick a background, set the grid, write a headline, download. There is no account, no watermark and no upload: every pixel is drawn locally with the HTML5 Canvas API and the file is saved straight from your browser.</p>
+        <p>A cutting mat wallpaper is a background styled after the mats used in sewing, model making and paper craft: a flat saturated color overlaid with a fine measurement grid, a numbered ruler along the edges, a 45° diagonal and dashed angle guides. It reads as calm and technical rather than decorative, which is why it works well behind desktop icons and lock screen clocks.</p>
+      </section>
+
+      <section id="how-it-works">
+        <h2>How it works</h2>
+        <ol>
+          <li><b>Choose a background.</b> Four presets, any custom color, or one of five gradients with an adjustable angle from 0° to 360°.</li>
+          <li><b>Add fabric, optionally.</b> The intensity slider composites a simulated draped textile over the color; folds and drape control how many creases there are and which way they fall.</li>
+          <li><b>Set the grid.</b> Lines or crosses, cell size from 28 to 110, and a contrast slider that runs the grid from a whisper to a hard technical overlay.</li>
+          <li><b>Write the text.</b> A centered serif headline, a vertical side label and a paragraph in the bottom right corner. With knockout enabled, the grid is cut away behind each text block along the nearest major gridline.</li>
+          <li><b>Export.</b> Pick a format and download the PNG. The preview and the export run the same drawing function, so the file is identical to what you see, only at full resolution.</li>
+        </ol>
+      </section>
+
+      <section id="formats">
+        <h2>Export formats and resolutions</h2>
+        <div class="tablewrap">
+          <table>
+            <caption>Every format exports as PNG</caption>
+            <thead><tr><th scope="col">Format</th><th scope="col">Resolution</th><th scope="col">Aspect ratio</th><th scope="col">Typical use</th></tr></thead>
+            <tbody>
+              <tr><td>Desktop 4K</td><td>3840 × 2160</td><td>16:9</td><td>Most external monitors and TVs</td></tr>
+              <tr><td>Desktop 16:10</td><td>3840 × 2400</td><td>16:10</td><td>MacBook and Surface displays</td></tr>
+              <tr><td>Ultrawide</td><td>5120 × 1440</td><td>32:9</td><td>Super ultrawide monitors</td></tr>
+              <tr><td>iPad</td><td>2732 × 2048</td><td>4:3</td><td>iPad Pro and iPad Air</td></tr>
+              <tr><td>iPhone</td><td>1320 × 2868</td><td>≈ 9:19.5</td><td>iPhone lock and home screen</td></tr>
+              <tr><td>Story</td><td>1080 × 1920</td><td>9:16</td><td>Instagram and TikTok backgrounds</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>All measurements scale from a 4K reference, so margins, grid density and type size stay in proportion across every format instead of stretching.</p>
+      </section>
+
+      <section id="fabric">
+        <h2>The draped fabric simulation</h2>
+        <p>The fabric is not a photo or a blur filter. A low resolution grayscale luminance map is generated procedurally with <b>value noise</b> and <b>fractional Brownian motion</b>, then scaled up — the browser's own interpolation is what makes the folds soft — and composited over the background in <code>soft-light</code> and <code>multiply</code> blend modes.</p>
+        <p>Noise is applied at three points: it bends each fold off its axis, varies the spacing so folds gather and open, and modulates brightness along a fold's length. An amplitude exponent above 1 widens the midtones, which is what makes the cloth read as falling rather than creased. Every variation comes from a seed you can reroll.</p>
+      </section>
+
+      <section id="faq">
+        <h2>Frequently asked questions</h2>
+
+        <h3>What is a cutting mat wallpaper?</h3>
+        <p>A cutting mat wallpaper is a desktop or phone background styled after a self-healing craft cutting mat: a flat saturated color overlaid with a fine measurement grid, a numbered ruler along the edges, a 45° diagonal and dashed angle guides. The look comes from the tools used in sewing, model making and paper craft, and it reads as calm and technical rather than decorative.</p>
+
+        <h3>Is the wallpaper generator free?</h3>
+        <p>Yes. It is free, needs no account and shows no ads. Every wallpaper is drawn in your own browser with the HTML5 Canvas API, so no image is ever uploaded to a server.</p>
+
+        <h3>What resolution are the exported wallpapers?</h3>
+        <p>Six formats are available: 3840 × 2160 for 16:9 desktops, 3840 × 2400 for 16:10, 5120 × 1440 for 32:9 ultrawide monitors, 2732 × 2048 for iPad, 1320 × 2868 for iPhone and 1080 × 1920 for 9:16 stories. Files are exported as PNG.</p>
+
+        <h3>How do I share a wallpaper configuration?</h3>
+        <p>Every setting is encoded in the page URL as it changes. Press <b>Copy preset link</b>, or copy the address bar, and whoever opens that link sees the exact same configuration. Nothing is stored on a server or in browser storage.</p>
+
+        <h3>How is the draped fabric effect made?</h3>
+        <p>A low resolution grayscale luminance map is generated with value noise and fractional Brownian motion, then scaled up and composited over the background in soft-light and multiply blend modes. Noise perturbs the fold direction, the spacing between folds and the brightness along each fold, so the folds never look periodic.</p>
+
+        <h3>Can I use the generated wallpapers commercially?</h3>
+        <p>The images this tool draws are generated by algorithms in your browser and are yours to use. The tool is an original implementation inspired by the visual language of cutting mats; it does not contain or redistribute any third party artwork.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    Inspired by the <b>Cutting Mat Wallpaper Pack</b> by Rad Bali &amp; Robert McCombe. This tool draws its own grids — it does not redistribute their files.
+  </footer>
+</div>
+
+<script>
+const PRESETS = [
+  {name:'Paper white',   bg:'#F2F0EA', line:'0,0,0',       text:'#141414'},
+  {name:'Mat green',     bg:'#0E8A62', line:'255,255,255', text:'#ffffff'},
+  {name:'Cutter orange', bg:'#DC5A16', line:'255,255,255', text:'#ffffff'},
+  {name:'Carbon black',  bg:'#0A0A0A', line:'255,255,255', text:'#d8d8d8'},
+];
+const GRADIENTS = [
+  {name:'Viridis', stops:[[0,'#35089E'],[.24,'#0B62D6'],[.5,'#23A6B4'],[.72,'#4CC2A0'],[1,'#BCE08C']], line:'255,255,255', text:'#ffffff'},
+  {name:'Magma',   stops:[[0,'#120A2E'],[.3,'#5B2A8C'],[.62,'#C4508F'],[.85,'#F0805A'],[1,'#FCD98A']], line:'255,255,255', text:'#ffffff'},
+  {name:'Ember',   stops:[[0,'#11060B'],[.32,'#7A1220'],[.66,'#E0552B'],[1,'#F2C14E']], line:'255,255,255', text:'#ffffff'},
+  {name:'Abyss',   stops:[[0,'#04121F'],[.38,'#0B4C6E'],[.7,'#199E96'],[1,'#8FE0B8']], line:'255,255,255', text:'#ffffff'},
+  {name:'Bone',    stops:[[0,'#EDEAE1'],[.5,'#D9D4C7'],[1,'#B9B2A2']], line:'0,0,0', text:'#141414'},
+];
+
+let state = {
+  preset:1, custom:null, grad:null, angle:105,
+  cloth:0, folds:2, drape:-62, seed:7.3,
+  pattern:'lines', cell:52, opacity:26, tsize:22,
+  frame:true, ruler:true, diag:true, angles:true, grain:true, knock:true,
+  text:'Stay Focused.',
+  side:'CUTTING MAT WALLPAPER — 16:9',
+  para:"Don't let distractions dilute your potential. Point your attention at what actually matters and watch clarity turn into results.",
+  size:'3840x2160'
+};
+// Copia de los valores por defecto: solo se serializa lo que se aparta de aquí.
+const DEF = Object.assign({}, state);
+
+/* ---------- swatches ---------- */
+const swBox=document.getElementById('swatches'), grBox=document.getElementById('gradients');
+PRESETS.forEach((p,i)=>{
+  const b=document.createElement('button');
+  b.type='button'; b.className='sw'; b.style.background=p.bg;
+  b.title=p.name; b.setAttribute('aria-label','Background: '+p.name);
+  b.onclick=()=>{state.preset=i;state.custom=null;state.grad=null;syncSw();draw();};
+  swBox.appendChild(b);
+});
+const cust=document.createElement('label');
+cust.className='sw'; cust.title='Custom color';
+cust.innerHTML='<input type="color" value="#3B4A6B" aria-label="Custom background color">';
+cust.style.background='linear-gradient(135deg,#e11d48,#f59e0b,#10b981,#3b82f6)';
+cust.querySelector('input').addEventListener('input',e=>{state.custom=e.target.value;state.preset=-1;state.grad=null;syncSw();draw();});
+swBox.appendChild(cust);
+
+GRADIENTS.forEach((gp,i)=>{
+  const b=document.createElement('button');
+  b.type='button'; b.className='sw';
+  b.title=gp.name; b.setAttribute('aria-label','Gradient: '+gp.name);
+  b.style.background='linear-gradient(160deg,'+gp.stops.map(s=>s[1]+' '+Math.round(s[0]*100)+'%').join(',')+')';
+  b.onclick=()=>{state.grad=i;state.preset=-1;state.custom=null;syncSw();draw();};
+  grBox.appendChild(b);
+});
+function syncSw(){
+  [...swBox.children].forEach((el,i)=>el.setAttribute('aria-pressed', i===state.preset));
+  swBox.lastElementChild.setAttribute('aria-pressed', !!state.custom);
+  [...grBox.children].forEach((el,i)=>el.setAttribute('aria-pressed', i===state.grad));
+}
+syncSw();
+
+/* ---------- controls ---------- */
+document.querySelectorAll('#pattern button').forEach(b=>{
+  b.onclick=()=>{state.pattern=b.dataset.v;
+    document.querySelectorAll('#pattern button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw();};
+});
+['cell','opacity','tsize','angle','cloth','folds','drape'].forEach(id=>{
+  const el=document.getElementById(id),out=document.getElementById(id+'v');
+  el.oninput=()=>{state[id]=+el.value;out.textContent=el.value;clothCache=null;draw();};
+});
+['frame','ruler','diag','angles','grain','knock'].forEach(id=>{
+  document.getElementById(id).onchange=e=>{state[id]=e.target.checked;draw();};
+});
+['text','side','para'].forEach(id=>{
+  document.getElementById(id).oninput=e=>{state[id]=e.target.value;draw();};
+});
+
+/* ---------- preset en la URL ---------- */
+// El estado se serializa a query string para poder compartir una configuración
+// por enlace. No hay localStorage: la URL es el único sitio donde persiste.
+const QKEYS = [
+  ['preset','p'], ['grad','g'], ['angle','a'],
+  ['cloth','cl'], ['folds','f'], ['drape','d'], ['seed','s'],
+  ['pattern','pt'], ['cell','ce'], ['opacity','o'], ['tsize','ts'],
+  ['text','t'], ['side','sd'], ['para','pa'], ['size','sz']
+];
+const QFLAGS = ['frame','ruler','diag','angles','grain','knock'];
+// Rangos de los sliders: lo que venga de la URL se recorta a ellos.
+const QNUM = {angle:[0,360], cloth:[0,100], folds:[1,8], drape:[-85,85],
+              seed:[0,400], cell:[28,110], opacity:[4,60], tsize:[10,46]};
+
+function serialize(){
+  const q=new URLSearchParams();
+  QKEYS.forEach(([k,short])=>{
+    const v=state[k];
+    if(v===null||v===DEF[k])return;
+    q.set(short, k==='seed' ? (+v).toFixed(2) : v);
+  });
+  if(state.custom) q.set('c', state.custom.replace('#',''));
+  const fl=QFLAGS.map(k=>state[k]?1:0).join('');
+  if(fl!==QFLAGS.map(k=>DEF[k]?1:0).join('')) q.set('fl',fl);
+  return q.toString();
+}
+
+// Lee la URL sobre el estado. Todo se valida: los valores llegan de fuera.
+function readQuery(){
+  const q=new URLSearchParams(location.search);
+  if(!q.toString()) return false;
+  const num=(key,k)=>{
+    const raw=q.get(key); if(raw===null) return null;
+    const v=parseFloat(raw); if(!isFinite(v)) return null;
+    const r=QNUM[k]; return Math.min(r[1],Math.max(r[0],v));
+  };
+  const str=(key,max)=>{const v=q.get(key);return v===null?null:v.slice(0,max);};
+
+  // Fondo: degradado, color libre o preset — excluyentes entre sí.
+  const gq=q.get('g')===null?null:parseInt(q.get('g'),10);
+  const cq=q.get('c'), pq=q.get('p');
+  if(gq!==null && gq>=0 && gq<GRADIENTS.length){
+    state.grad=gq; state.preset=-1; state.custom=null;
+  } else if(cq && /^[0-9a-f]{6}$/i.test(cq)){
+    state.custom='#'+cq; state.preset=-1; state.grad=null;
+  } else if(pq!==null){
+    const p=parseInt(pq,10);
+    if(p>=0 && p<PRESETS.length){ state.preset=p; state.grad=null; state.custom=null; }
+  }
+
+  let v;
+  ['angle','cloth','folds','drape','seed','cell','opacity','tsize'].forEach(k=>{
+    const key=QKEYS.find(e=>e[0]===k)[1];
+    if((v=num(key,k))!==null) state[k]= k==='seed' ? v : Math.round(v);
+  });
+
+  const pt=q.get('pt');
+  if(pt==='lines'||pt==='dots') state.pattern=pt;
+
+  const fl=q.get('fl');
+  if(fl && /^[01]{6}$/.test(fl)) QFLAGS.forEach((k,i)=>state[k]=fl[i]==='1');
+
+  if((v=str('t',300))!==null) state.text=v;
+  if((v=str('sd',200))!==null) state.side=v;
+  if((v=str('pa',1500))!==null) state.para=v;
+
+  const sz=q.get('sz');
+  if(sz && [...document.getElementById('size').options].some(o=>o.value===sz)) state.size=sz;
+  return true;
+}
+
+// Vuelca el estado sobre los controles (tras leer la URL).
+function syncUI(){
+  ['cell','opacity','tsize','angle','cloth','folds','drape'].forEach(id=>{
+    document.getElementById(id).value=state[id];
+    document.getElementById(id+'v').textContent=state[id];
+  });
+  QFLAGS.forEach(id=>document.getElementById(id).checked=state[id]);
+  ['text','side','para'].forEach(id=>document.getElementById(id).value=state[id]);
+  document.getElementById('size').value=state.size;
+  document.querySelectorAll('#pattern button').forEach(b=>
+    b.setAttribute('aria-pressed', b.dataset.v===state.pattern));
+  if(state.custom) cust.querySelector('input').value=state.custom;
+  syncSw();
+}
+
+function shareURL(){
+  const qs=serialize();
+  return location.href.split(/[?#]/)[0]+(qs?'?'+qs:'');
+}
+
+// En file:// el navegador bloquea replaceState; se desactiva al primer fallo
+// y el botón de copiar sigue funcionando porque arma el enlace por su cuenta.
+let urlTimer=null, urlOK=true;
+function pushURL(){
+  if(!urlOK) return;
+  clearTimeout(urlTimer);
+  urlTimer=setTimeout(()=>{
+    const qs=serialize();
+    try{ history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')); }
+    catch(e){ urlOK=false; }
+  },250);
+}
+
+document.getElementById('copylink').onclick=async function(){
+  const url=shareURL(), hint=document.getElementById('copyhint');
+  let ok=false;
+  try{ await navigator.clipboard.writeText(url); ok=true; }
+  catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=url; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ ok=document.execCommand('copy'); }catch(e2){}
+    ta.remove();
+  }
+  hint.textContent = ok ? 'Link copied to clipboard.'
+                        : "Couldn't copy. Copy the address bar instead.";
+  setTimeout(()=>{hint.textContent='The link stores every current setting.';},2600);
+};
+
+/* ---------- palette ---------- */
+function lum(hex){const n=parseInt(hex.slice(1),16);return .2126*(n>>16&255)/255+.7152*(n>>8&255)/255+.0722*(n&255)/255;}
+function palette(){
+  if(state.grad!==null) return GRADIENTS[state.grad];
+  if(state.custom){const d=lum(state.custom)<.55;return{bg:state.custom,line:d?'255,255,255':'0,0,0',text:d?'#ffffff':'#141414'};}
+  return PRESETS[state.preset];
+}
+
+/* ---------- texturas ---------- */
+let grainTile=null;
+function makeGrain(){
+  if(grainTile) return grainTile;
+  const s=160,c=document.createElement('canvas');c.width=c.height=s;
+  const x=c.getContext('2d'),d=x.createImageData(s,s);
+  for(let i=0;i<d.data.length;i+=4){const v=200+Math.random()*55;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
+  x.putImageData(d,0,0);grainTile=c;return c;
+}
+
+// Mapa de luminancia que simula pliegues de tela: ondas con deformación
+// de dominio (domain warping) para que los dobleces no queden paralelos.
+// Ruido de valor con interpolacion suave + fBm de varias octavas.
+// Es lo que rompe la regularidad: sin esto los pliegues son senos puros
+// y se leen como trazos rectos en vez de tela.
+function hash2(x,y,s){
+  const n=Math.sin(x*127.1+y*311.7+s*74.7)*43758.5453;
+  return n-Math.floor(n);
+}
+function vnoise(x,y,s){
+  const xi=Math.floor(x), yi=Math.floor(y), xf=x-xi, yf=y-yi;
+  const u=xf*xf*(3-2*xf), v=yf*yf*(3-2*yf);
+  const a=hash2(xi,yi,s), b=hash2(xi+1,yi,s), c=hash2(xi,yi+1,s), d=hash2(xi+1,yi+1,s);
+  return a*(1-u)*(1-v)+b*u*(1-v)+c*(1-u)*v+d*u*v;
+}
+function fbm(x,y,s,oct){
+  let sum=0, amp=0.5, f=1;
+  for(let i=0;i<oct;i++){ sum+=amp*(vnoise(x*f,y*f,s+i*13.3)*2-1); f*=2.07; amp*=0.5; }
+  return sum;
+}
+
+let clothCache=null, clothKey='';
+function makeCloth(aspect){
+  const key=[state.folds,state.drape,state.seed,aspect.toFixed(3)].join('|');
+  if(clothCache && clothKey===key) return clothCache;
+  const w=340,h=Math.max(60,Math.round(340/aspect));
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const x=c.getContext('2d'),img=x.createImageData(w,h),d=img.data;
+  const ang=state.drape*Math.PI/180, ca=Math.cos(ang), sa=Math.sin(ang);
+  const F=state.folds, S=state.seed;
+  for(let j=0;j<h;j++){
+    for(let i=0;i<w;i++){
+      const u=i/w, v=j/h;
+      const p=u*ca-v*sa, q=u*sa+v*ca;
+
+      // El pliegue se desvia de forma irregular a lo largo de su caida.
+      const warp=fbm(q*1.7,p*0.55,S,4)*0.52;
+      // La separacion entre pliegues no es constante: se juntan y se abren.
+      const density=1+fbm(q*0.75+11,p*0.28,S+31,2)*0.50;
+
+      const t=(p*F*density+warp)*Math.PI*2;
+      let val=Math.sin(t)*0.72+Math.sin(t*2.13+1.1)*0.17+Math.sin(t*0.47-0.5)*0.26;
+      val/=1.15;
+
+      // Un mismo pliegue no brilla igual en todo su recorrido.
+      val*=1+fbm(q*2.3+5,p*1.05,S+7,3)*0.42;
+      // Exponente >1: cae en vez de arrugarse.
+      val=Math.sign(val)*Math.pow(Math.min(1,Math.abs(val)),1.24);
+
+      // Micro-relieve del tejido, muy tenue.
+      const weave=fbm(u*26,v*26,S+61,2)*0.07;
+
+      const amb=1-v*0.30-u*0.12;
+      const g=Math.max(0,Math.min(255,128+val*82+weave*70+(amb-0.78)*40));
+      const kk=(j*w+i)*4;
+      d[kk]=d[kk+1]=d[kk+2]=g; d[kk+3]=255;
+    }
+  }
+  x.putImageData(img,0,0);
+  clothCache=c; clothKey=key; return c;
+}
+
+/* ---------- render ---------- */
+function render(cv,W,H){
+  cv.width=W;cv.height=H;
+  const g=cv.getContext('2d');
+  const k=W/3840, P=palette(), A=state.opacity/100;
+  const LC=P.line;
+
+  // fondo
+  if(P.stops){
+    const rad=(state.angle-90)*Math.PI/180, cx=W/2, cy=H/2;
+    const half=(Math.abs(W*Math.cos(rad))+Math.abs(H*Math.sin(rad)))/2;
+    const gr=g.createLinearGradient(cx-Math.cos(rad)*half,cy-Math.sin(rad)*half,cx+Math.cos(rad)*half,cy+Math.sin(rad)*half);
+    P.stops.forEach(s=>gr.addColorStop(s[0],s[1]));
+    g.fillStyle=gr;
+  } else g.fillStyle=P.bg;
+  g.fillRect(0,0,W,H);
+
+  // tela: se aplica sobre el color, debajo de la cuadrícula
+  if(state.cloth>0){
+    const cloth=makeCloth(W/H);
+    g.save();
+    g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
+    g.globalCompositeOperation='soft-light';
+    g.globalAlpha=Math.min(1,state.cloth/100*1.35);
+    g.drawImage(cloth,0,0,W,H);
+    g.globalCompositeOperation='multiply';
+    g.globalAlpha=state.cloth/100*0.30;
+    g.drawImage(cloth,0,0,W,H);
+    g.restore();
+  }
+
+  const inset=Math.round(Math.min(W,H)*(state.ruler?0.075:0.055));
+  const L=inset,T=inset,R=W-inset,B=H-inset;
+  const hair=Math.max(1,1.5*k);
+  const cell=state.cell*k*2;
+
+  // --- layout de los textos: se mide ANTES de trazar la trama ---
+  const hLines=state.text.split('\n').filter(s=>s.trim()!=='');
+  const hfs=state.tsize*k*2.4, hlh=hfs*1.26;
+  let headBox=null;
+  if(hLines.length){
+    g.font=hfs+'px "Instrument Serif",Georgia,serif';
+    let wmax=0; hLines.forEach(l=>wmax=Math.max(wmax,g.measureText(l.trim()).width));
+    const th=(hLines.length-1)*hlh+hfs;
+    headBox={x:W/2-wmax/2,y:H/2-th/2,w:wmax,h:th};
+  }
+
+  const pfs=17*k, plh=pfs*1.55, pmaxw=Math.min((R-L)*0.30,520*k);
+  let paraLines=[], paraBox=null, px=0, py0=0;
+  if(state.para.trim()){
+    g.font=pfs+'px "IBM Plex Sans",system-ui,sans-serif';
+    let cur='';
+    state.para.trim().split(/\s+/).forEach(w=>{
+      const t=cur?cur+' '+w:w;
+      if(g.measureText(t).width>pmaxw && cur){paraLines.push(cur);cur=w;} else cur=t;
+    });
+    if(cur)paraLines.push(cur);
+    let pw=0; paraLines.forEach(l=>pw=Math.max(pw,g.measureText(l).width));
+    px=R-cell*0.6-pmaxw;
+    py0=B-cell*0.9-(paraLines.length-1)*plh;
+    paraBox={x:px,y:py0-pfs*0.85,w:pw,h:(paraLines.length-1)*plh+pfs*1.2};
+  }
+
+  // Recorta la trama a la celda mayor más cercana que contenga cada bloque
+  const MAJ=cell*5;
+  function snap(r,pad){
+    let x0=r.x-pad,x1=r.x+r.w+pad,y0=r.y-pad,y1=r.y+r.h+pad;
+    let sx0=L+Math.floor((x0-L)/MAJ)*MAJ, sx1=L+Math.ceil((x1-L)/MAJ)*MAJ;
+    let sy1=B-Math.floor((B-y1)/MAJ)*MAJ, sy0=B-Math.ceil((B-y0)/MAJ)*MAJ;
+    sx0=Math.max(L,sx0); sx1=Math.min(R,sx1);
+    sy0=Math.max(T,sy0); sy1=Math.min(B,sy1);
+    return {x:sx0,y:sy0,w:sx1-sx0,h:sy1-sy0};
+  }
+  const knocks=[];
+  if(state.knock){
+    if(headBox) knocks.push(snap(headBox,cell*0.55));
+    if(paraBox) knocks.push(snap(paraBox,cell*0.45));
+  }
+
+  g.save();
+  g.beginPath();
+  g.rect(L,T,R-L,B-T);
+  knocks.forEach(r=>g.rect(r.x,r.y,r.w,r.h));
+  g.clip('evenodd');
+
+  if(state.pattern==='lines'){
+    g.strokeStyle='rgba('+LC+','+(A*0.5)+')';g.lineWidth=hair;g.beginPath();
+    for(let x=L;x<=R+1;x+=cell){g.moveTo(Math.round(x)+.5,T);g.lineTo(Math.round(x)+.5,B);}
+    for(let y=B;y>=T-1;y-=cell){g.moveTo(L,Math.round(y)+.5);g.lineTo(R,Math.round(y)+.5);}
+    g.stroke();
+    g.strokeStyle='rgba('+LC+','+(A*2.4)+')';g.lineWidth=hair*2.4;g.beginPath();
+    let i=0;for(let x=L;x<=R+1;x+=cell){if(i++%5===0){g.moveTo(Math.round(x)+.5,T);g.lineTo(Math.round(x)+.5,B);}}
+    i=0;for(let y=B;y>=T-1;y-=cell){if(i++%5===0){g.moveTo(L,Math.round(y)+.5);g.lineTo(R,Math.round(y)+.5);}}
+    g.stroke();
+  }else{
+    const arm=Math.max(2,cell*0.14);
+    g.strokeStyle='rgba('+LC+','+(A*1.7)+')';g.lineWidth=hair;g.beginPath();
+    for(let x=L;x<=R+1;x+=cell/2)for(let y=B;y>=T-1;y-=cell/2){
+      const rx=Math.round(x)+.5,ry=Math.round(y)+.5;
+      g.moveTo(rx-arm,ry);g.lineTo(rx+arm,ry);g.moveTo(rx,ry-arm);g.lineTo(rx,ry+arm);
+    }
+    g.stroke();
+  }
+
+  // guías de ángulo punteadas desde la esquina inferior izquierda
+  if(state.angles){
+    const far=Math.hypot(R-L,B-T)*1.4;
+    g.setLineDash([10*k,9*k]);
+    g.lineWidth=hair;
+    g.font=(17*k)+'px "IBM Plex Mono",monospace';
+    g.textAlign='left';g.textBaseline='alphabetic';
+    [15,30,60,75].forEach(deg=>{
+      const r=deg*Math.PI/180;
+      g.strokeStyle='rgba('+LC+','+(A*1.5)+')';
+      g.beginPath();g.moveTo(L,B);g.lineTo(L+Math.cos(r)*far,B-Math.sin(r)*far);g.stroke();
+      const d=cell*2.6;
+      g.fillStyle='rgba('+LC+','+Math.min(1,A*3)+')';
+      g.fillText(deg+'°',L+Math.cos(r)*d+9*k,B-Math.sin(r)*d-8*k);
+    });
+    g.setLineDash([]);
+  }
+
+  if(state.diag){
+    g.strokeStyle='rgba('+LC+','+Math.min(1,A*2.6)+')';g.lineWidth=hair*1.8;
+    g.beginPath();g.moveTo(L,B);g.lineTo(L+(B-T),T);g.stroke();
+  }
+  g.restore();
+
+  // los recortes conservan su borde con el grosor de línea mayor
+  if(knocks.length){
+    g.strokeStyle='rgba('+LC+','+Math.min(1,A*2.4)+')';g.lineWidth=hair*2.4;
+    knocks.forEach(r=>g.strokeRect(Math.round(r.x)+.5,Math.round(r.y)+.5,r.w,r.h));
+  }
+
+  // marco
+  if(state.frame){
+    g.strokeStyle='rgba('+LC+','+Math.min(1,A*2.6)+')';g.lineWidth=hair*2.4;
+    g.strokeRect(Math.round(L)+.5,Math.round(T)+.5,R-L,B-T);
+  }
+
+  // regla numerada con ticks
+  if(state.ruler){
+    const fs=15*k, tick=Math.max(3,9*k), step=cell;
+    g.font=fs+'px "IBM Plex Mono",monospace';
+    g.fillStyle='rgba('+LC+','+Math.min(1,A*2.6)+')';
+    g.strokeStyle='rgba('+LC+','+(A*1.6)+')';g.lineWidth=hair;
+
+    g.textAlign='center';g.textBaseline='bottom';
+    let n=0;
+    for(let x=L;x<=R+1;x+=step){
+      g.beginPath();g.moveTo(Math.round(x)+.5,T-tick);g.lineTo(Math.round(x)+.5,T);g.stroke();
+      g.fillText(n, x, T-tick-4*k);
+      g.textBaseline='top';
+      g.fillText(n, x, B+tick+4*k);
+      g.beginPath();g.moveTo(Math.round(x)+.5,B);g.lineTo(Math.round(x)+.5,B+tick);g.stroke();
+      g.textBaseline='bottom';
+      n++;
+    }
+    n=0;
+    g.textBaseline='middle';
+    for(let y=B;y>=T-1;y-=step){
+      g.beginPath();g.moveTo(L-tick,Math.round(y)+.5);g.lineTo(L,Math.round(y)+.5);g.stroke();
+      g.beginPath();g.moveTo(R,Math.round(y)+.5);g.lineTo(R+tick,Math.round(y)+.5);g.stroke();
+      g.textAlign='right';g.fillText(n,L-tick-4*k,y);
+      g.textAlign='left'; g.fillText(n,R+tick+4*k,y);
+      n++;
+    }
+  }
+
+  // grano
+  if(state.grain){
+    g.save();g.globalCompositeOperation='overlay';g.globalAlpha=.055;
+    g.fillStyle=g.createPattern(makeGrain(),'repeat');g.fillRect(0,0,W,H);g.restore();
+  }
+
+  // etiqueta lateral vertical
+  if(state.side.trim()){
+    g.save();
+    g.translate(L+cell*0.55, T+cell*0.7);
+    g.rotate(Math.PI/2);
+    g.fillStyle=P.text;g.globalAlpha=.85;
+    g.font=(16*k)+'px "IBM Plex Mono",monospace';
+    g.textAlign='left';g.textBaseline='middle';
+    g.fillText(state.side.trim(),0,0);
+    g.restore();
+  }
+
+  // titular
+  if(hLines.length){
+    g.fillStyle=P.text;
+    g.font=hfs+'px "Instrument Serif",Georgia,serif';
+    g.textAlign='center';g.textBaseline='middle';
+    const start=H/2-(hLines.length-1)*hlh/2;
+    hLines.forEach((ln,i)=>g.fillText(ln.trim(),W/2,start+i*hlh));
+  }
+
+  // párrafo abajo a la derecha
+  if(paraLines.length){
+    g.font=pfs+'px "IBM Plex Sans",system-ui,sans-serif';
+    g.fillStyle=P.text;g.globalAlpha=.92;
+    g.textAlign='left';g.textBaseline='alphabetic';
+    paraLines.forEach((ln,i)=>g.fillText(ln,px,py0+i*plh));
+    g.globalAlpha=1;
+  }
+}
+
+/* ---------- preview / export ---------- */
+const preview=document.getElementById('preview');
+function currentSize(){return state.size.split('x').map(Number);}
+function draw(){
+  const [W,H]=currentSize();
+  const pw=1500,ph=Math.round(pw*H/W);
+  render(preview,pw,ph);
+  pushURL();
+}
+document.getElementById('size').onchange=e=>{state.size=e.target.value;clothCache=null;draw();};
+document.getElementById('dl').onclick=function(){
+  const btn=this;btn.disabled=true;btn.textContent='Generating…';
+  setTimeout(()=>{
+    const [W,H]=currentSize(),out=document.createElement('canvas');
+    render(out,W,H);
+    out.toBlob(b=>{
+      const a=document.createElement('a');a.href=URL.createObjectURL(b);
+      a.download='cuttingmat-'+W+'x'+H+'.png';a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+      btn.disabled=false;btn.textContent='Download PNG';
+    },'image/png');
+  },40);
+};
+document.getElementById('reseed').onclick=()=>{state.seed=Math.random()*400;clothCache=null;draw();};
+if(readQuery()) syncUI();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+draw();
+</script>
+</body>
+</html>
