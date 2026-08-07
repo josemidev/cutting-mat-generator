@@ -10,7 +10,9 @@
 
 ## What it is
 
-One HTML file. No build step, no bundler, no npm install, no backend. Open it by double-clicking and it works; drop it on any static host and it works there too. Every pixel is drawn locally with the Canvas 2D API, so nothing is ever uploaded anywhere.
+One HTML file. No build step, no bundler, no npm install, no backend. Open it by double-clicking and it works; drop it on any static host and it works there too. Every pixel is drawn locally with the Canvas 2D API, so no wallpaper is ever uploaded anywhere.
+
+The hosted version counts page views with Vercel Web Analytics — cookieless, no personal data — via a single `<script>` tag that the deployment serves itself. Open the file locally and that request simply does not exist.
 
 ## Features
 

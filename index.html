@@ -137,7 +137,7 @@
         "Shareable presets encoded in the URL",
         "Client-side PNG export with no upload"
       ],
-      "permissions": "No account, no data collection, no server upload"
+      "permissions": "No account required. Wallpapers are generated locally and never uploaded. The site uses anonymous, cookieless page analytics and collects no personal data."
     },
     {
       "@type": "FAQPage",
@@ -276,7 +276,7 @@
 
         <div class="sec">
           <button type="button" class="dl" id="dl">Download PNG</button>
-          <p class="note">Generated in your browser. Nothing is uploaded anywhere.</p>
+          <p class="note">Your wallpaper is drawn in your browser and never uploaded.</p>
         </div>
       </form>
     </div>
@@ -357,6 +357,7 @@
       </a>
     </div>
     <p>Inspired by the <b>Cutting Mat Wallpaper Pack</b> by Rad Bali &amp; Robert McCombe. This tool draws its own grids — it does not redistribute their files.</p>
+    <p>Page views are counted with Vercel Web Analytics: no cookies, no personal data, no cross-site tracking. Your wallpapers never leave your browser.</p>
   </footer>
 </div>
 
@@ -869,5 +870,10 @@ if(readQuery()) syncUI();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
 draw();
 </script>
+
+<!-- Vercel Web Analytics. El script lo sirve el propio despliegue, asi que no
+     hay dependencias npm ni paso de build. Sin cookies y sin datos personales.
+     En local (file:// o localhost) la ruta no existe y simplemente no carga. -->
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
