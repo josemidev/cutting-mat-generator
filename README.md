@@ -2,7 +2,7 @@
 
 **Draw your own cutting mat wallpapers in the browser.** Technical grids, numbered rulers, angle guides and procedurally simulated draped fabric — exported as PNG at up to 5120 × 1440.
 
-**→ [cutting-mat-generator-eight.vercel.app](https://cutting-mat-generator-eight.vercel.app)**
+**→ [cuttingmat.josemi.dev](https://cuttingmat.josemi.dev)**
 
 ![A cutting mat wallpaper: green background, white technical grid, 45° diagonal and the headline Cutting Mat](og.jpg)
 

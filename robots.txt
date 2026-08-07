@@ -26,4 +26,4 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-Sitemap: https://cutting-mat-generator-eight.vercel.app/sitemap.xml
+Sitemap: https://cuttingmat.josemi.dev/sitemap.xml
